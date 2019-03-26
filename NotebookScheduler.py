@@ -42,7 +42,7 @@ def processNotebooks(notebookDirectory):
                 os.mkdir(notebookSnapshot)
 
             # The output will be saved in a timestamp directory (snapshots/notebook/timestamp) 
-            runDir = os.path.join(notebookSnapshot, str(now))
+            runDir = os.path.join(notebookSnapshot, now.strftime("%Y-%m-%d %H.%M.%S.%f"))
             if os.path.isdir(runDir) == False:
                 os.mkdir(runDir)
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     logging.getLogger('').addHandler(console)
 
     # Check if the subfolders for notebooks exist, and create them if they don't
-    for directory in ['daily','hourly','weekly', 'monthly']:
+    for directory in ['daily','hourly','weekly']:
         if os.path.isdir(directory) == False:
             os.mkdir(directory)
 
@@ -98,11 +98,12 @@ if __name__ == '__main__':
         # Install this with pip install schedule
         import schedule
 
+        print("Starting scheduler...")
+
         # If no directory has been specified, schedule the processing and execute
         schedule.every().hour.at(':40').do(processNotebooks, notebookDirectory='hourly')
         schedule.every().day.at('13:15').do(processNotebooks, notebookDirectory='daily')
         schedule.every().sunday.at('13:15').do(processNotebooks, notebookDirectory='weekly')
-        schedule.every().month.do(processNotebooks, notebookDirectory='monthly')
 
         # Run the scheduled tasks
         while True:

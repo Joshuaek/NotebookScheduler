@@ -5,13 +5,13 @@ Check out [this blog post](https://productmetrics.net/blog/schedule-jupyter-note
 
 ## Introducing NotebookScheduler
 
-[NotebookScheduler](https://github.com/Joshuaek/NotebookScheduler) is a simple Python script which uses [Papermill](https://github.com/nteract/papermill) to execute a directory of Jupyter Notebooks. Notebooks are arranged into subfolders for hourly, daily, weekly or monthly execution. Each time a notebook is run, a snapshot is saved to a timestamped folder (along with any other outputs your notebook saves) giving you the ability to look back at past executions and to have a full audit of the analysis that has been done.
+[NotebookScheduler](https://github.com/Joshuaek/NotebookScheduler) is a simple Python script which uses [Papermill](https://github.com/nteract/papermill) to execute a directory of Jupyter Notebooks. Notebooks are arranged into subfolders for hourly, daily or weekly execution. Each time a notebook is run, a snapshot is saved to a timestamped folder (along with any other outputs your notebook saves) giving you the ability to look back at past executions and to have a full audit of the analysis that has been done.
 
 Once I've set up the notebook to provide whatever stats I want, scheduling its execution on a weekly basis is now as simple as a drag-and-drop  into the weekly subfolder.
 
 ## Getting started
 
-The code is available in this [GitHub repository](https://github.com/Joshuaek/NotebookScheduler) -clone or download it to a folder on your PC. The first time you run the script, it will create a skeleton directory structure, with subdirectories for hourly, daily, weekly and monthly notebooks.
+The code is available in this [GitHub repository](https://github.com/Joshuaek/NotebookScheduler) -clone or download it to a folder on your PC. The first time you run the script, it will create a skeleton directory structure, with subdirectories for hourly, daily and weekly notebooks.
 
 Simply move your notebook (*.ipynb) files into the relevant subdirectory and when the script is run they will be executed.
 
@@ -104,7 +104,7 @@ When the directory is specified using the ```-d``` option, the notebooks in the 
 
 ## About the snapshots
 
-Within each of the daily/hourly/weekly/monthly directories a "snapshot" directory will be created. This will have sub-folders for each notebook that is executed, and each execution will be stored in time stamped folder. Whilst this is a lot of nesting, it makes it quick and easy to view the output of a particular notebook on a particular day. Once the notebook is executed, Papermill will save the output notebook to the snapshot directory.
+Within each of the daily/hourly/weekly directories a "snapshot" directory will be created. This will have sub-folders for each notebook that is executed, and each execution will be stored in time stamped folder. Whilst this is a lot of nesting, it makes it quick and easy to view the output of a particular notebook on a particular day. Once the notebook is executed, Papermill will save the output notebook to the snapshot directory.
 
 ## Saving other artifacts
 
