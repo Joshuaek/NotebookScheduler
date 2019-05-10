@@ -21,43 +21,47 @@ def findFiles(directory, pattern):
         if fnmatch.fnmatch(filename.lower(), pattern):
             yield os.path.join(directory, filename)
 
-def processNotebooks(notebookDirectory):
-    logging.info('Processing ' + notebookDirectory)
+def processNotebooks(notebookDirectory, days=[]):
     
-    # Each time a notebook is processed a snapshot is saved to a snapshot sub-directory
-    # This checks the sub-directory exists and creates it if not
-    if os.path.isdir(os.path.join(notebookDirectory,snapshotDir)) == False:
-        os.mkdir(os.path.join(notebookDirectory,snapshotDir))
+    now = datetime.now()
     
-    for file in findFiles(notebookDirectory, '*.ipynb'):
-        try:
-            nb = os.path.basename(file)
-            
-            now = datetime.now()
-            
-            # Within the snapshot directory, each notebook output is stored in its own sub-directory
-            notebookSnapshot = os.path.join(notebookDirectory, snapshotDir, nb.split('.ipynb')[0])
-            
-            if os.path.isdir(notebookSnapshot) == False:
-                os.mkdir(notebookSnapshot)
+    # For monthly tasks, we only run on the specified days (or for others if no days are specified)
+    if (len(days) > 0 and now.day in days) or len(days) == 0:
 
-            # The output will be saved in a timestamp directory (snapshots/notebook/timestamp) 
-            runDir = os.path.join(notebookSnapshot, now.strftime("%Y-%m-%d %H.%M.%S.%f"))
-            if os.path.isdir(runDir) == False:
-                os.mkdir(runDir)
+        logging.info('Processing ' + notebookDirectory)
+        
+        # Each time a notebook is processed a snapshot is saved to a snapshot sub-directory
+        # This checks the sub-directory exists and creates it if not
+        if os.path.isdir(os.path.join(notebookDirectory,snapshotDir)) == False:
+            os.mkdir(os.path.join(notebookDirectory,snapshotDir))
+        
+        for file in findFiles(notebookDirectory, '*.ipynb'):
+            try:
+                nb = os.path.basename(file)
+                
+                # Within the snapshot directory, each notebook output is stored in its own sub-directory
+                notebookSnapshot = os.path.join(notebookDirectory, snapshotDir, nb.split('.ipynb')[0])
+                
+                if os.path.isdir(notebookSnapshot) == False:
+                    os.mkdir(notebookSnapshot)
 
-            # The snapshot file includes a timestamp
-            output_file = os.path.join(runDir, nb)
-            
-            # Execute the notebook and save the snapshot
-            pm.execute_notebook(
-                file,
-                output_file,
-                parameters=dict(snapshotDir = runDir + os.sep)
-            )
-        except Exception:
-            # If any errors occur with the notebook processing they will be logged to the log file
-            logging.exception("Error processing notebook")
+                # The output will be saved in a timestamp directory (snapshots/notebook/timestamp) 
+                runDir = os.path.join(notebookSnapshot, now.strftime("%Y-%m-%d %H.%M.%S.%f"))
+                if os.path.isdir(runDir) == False:
+                    os.mkdir(runDir)
+
+                # The snapshot file includes a timestamp
+                output_file = os.path.join(runDir, nb)
+                
+                # Execute the notebook and save the snapshot
+                pm.execute_notebook(
+                    file,
+                    output_file,
+                    parameters=dict(snapshotDir = runDir + os.sep)
+                )
+            except Exception:
+                # If any errors occur with the notebook processing they will be logged to the log file
+                logging.exception("Error processing notebook")
 
 
 
@@ -77,7 +81,7 @@ if __name__ == '__main__':
     logging.getLogger('').addHandler(console)
 
     # Check if the subfolders for notebooks exist, and create them if they don't
-    for directory in ['daily','hourly','weekly']:
+    for directory in ['daily','hourly','weekly', 'monthly']:
         if os.path.isdir(directory) == False:
             os.mkdir(directory)
 
@@ -104,9 +108,9 @@ if __name__ == '__main__':
         schedule.every().hour.at(':40').do(processNotebooks, notebookDirectory='hourly')
         schedule.every().day.at('13:15').do(processNotebooks, notebookDirectory='daily')
         schedule.every().sunday.at('13:15').do(processNotebooks, notebookDirectory='weekly')
+        schedule.every().day.at('14:15').do(processNotebooks, notebookDirectory='monthly', days=[1])
 
         # Run the scheduled tasks
         while True:
             schedule.run_pending()
             time.sleep(1)
-

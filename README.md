@@ -5,7 +5,7 @@ Check out [this blog post](https://productmetrics.net/blog/schedule-jupyter-note
 
 ## Introducing NotebookScheduler
 
-[NotebookScheduler](https://github.com/Joshuaek/NotebookScheduler) is a simple Python script which uses [Papermill](https://github.com/nteract/papermill) to execute a directory of Jupyter Notebooks. Notebooks are arranged into subfolders for hourly, daily or weekly execution. Each time a notebook is run, a snapshot is saved to a timestamped folder (along with any other outputs your notebook saves) giving you the ability to look back at past executions and to have a full audit of the analysis that has been done.
+[NotebookScheduler](https://github.com/Joshuaek/NotebookScheduler) is a simple Python script which uses [Papermill](https://github.com/nteract/papermill) to execute a directory of Jupyter Notebooks. Notebooks are arranged into subfolders for hourly, daily, weekly or monthly execution. Each time a notebook is run, a snapshot is saved to a timestamped folder (along with any other outputs your notebook saves) giving you the ability to look back at past executions and to have a full audit of the analysis that has been done.
 
 Once I've set up the notebook to provide whatever stats I want, scheduling its execution on a weekly basis is now as simple as a drag-and-drop  into the weekly subfolder.
 
@@ -76,7 +76,7 @@ If you're going to use Windows Task Scheduler or Cron jobs to schedule the execu
 
 ## Running the script without an external scheduler
 
-The simplest way to get started is to use the built in scheduler. In this mode, you'll run the Python script in a terminal and leave it running. The script itself will loop and run the notebooks as per the schedule determined by which of the subdirectories the notebook is in (e.g. daily, weekly).
+The simplest way to get started is to use the built in scheduler. In this mode, you'll run the Python script in a terminal and leave it running. The script itself will loop and run the notebooks as per the schedule determined by which of the subdirectories the notebook is in (e.g. daily, weekly, monthly).
 
 To do this, once you have some notebooks in your folders, simply run the script from its root folder:
 
@@ -101,6 +101,15 @@ python NotebookScheduler.py -d daily
 ```
 
 When the directory is specified using the ```-d``` option, the notebooks in the specified directory are executed immediately.
+
+## About monthly tasks
+Monthly tasks are run on the first day of the month. 
+
+If you want to run on a different day, then change this line:
+
+```
+schedule.every().day.at('14:15').do(processNotebooks, notebookDirectory='monthly', days=[1])
+```
 
 ## About the snapshots
 
